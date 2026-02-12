@@ -120,6 +120,14 @@ function NodeExecutionDetails({
             {ne.error && (
               <p className="mt-1 text-xs text-error ml-4">{ne.error}</p>
             )}
+            <div className="ml-4 space-y-1">
+              {ne.inputData != null && (
+                <JsonDropdown data={ne.inputData} label="Input JSON" />
+              )}
+              {ne.outputData != null && (
+                <JsonDropdown data={ne.outputData} label="Output JSON" />
+              )}
+            </div>
             {i < executions.length - 1 && (
               <div className="flex justify-center mt-2">
                 <svg className="w-4 h-4 text-text-secondary" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -371,6 +379,31 @@ function Collapsible({
         </svg>
       </button>
       {open && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
+}
+
+function JsonDropdown({ data, label = "Raw JSON" }: { data: unknown; label?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-1">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-xs text-text-secondary hover:text-text-primary transition-colors"
+      >
+        <span
+          className="inline-block transition-transform"
+          style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
+        >
+          &#9654;
+        </span>
+        {label}
+      </button>
+      {open && (
+        <pre className="mt-2 max-h-80 overflow-auto rounded-lg bg-bg-primary p-4 text-xs text-text-secondary border border-border">
+          {JSON.stringify(data, null, 2)}
+        </pre>
+      )}
     </div>
   );
 }
