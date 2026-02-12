@@ -131,13 +131,28 @@ function resolveInput(
 // Query substitution
 // ---------------------------------------------------------------------------
 
+function substituteQueryValue(obj: unknown, query: string): unknown {
+  if (typeof obj === "string") {
+    return obj.replace(/\{query\}/g, query);
+  }
+  if (Array.isArray(obj)) {
+    return obj.map((v) => substituteQueryValue(v, query));
+  }
+  if (typeof obj === "object" && obj !== null) {
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+      result[k] = substituteQueryValue(v, query);
+    }
+    return result;
+  }
+  return obj;
+}
+
 function substituteQuery(
   input: Record<string, unknown>,
   query: string
 ): Record<string, unknown> {
-  const json = JSON.stringify(input);
-  const replaced = json.replace(/\{query\}/g, query);
-  return JSON.parse(replaced);
+  return substituteQueryValue(input, query) as Record<string, unknown>;
 }
 
 // ---------------------------------------------------------------------------
